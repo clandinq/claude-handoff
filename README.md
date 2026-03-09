@@ -1,4 +1,4 @@
-# codex-delegate — Claude Code Skill
+# claude-handoff — Claude Code Skill
 
 A Claude Code skill plugin that offers to delegate implementation work to the [OpenAI Codex CLI](https://github.com/openai/codex) at every implementation decision point. Claude plans and reviews; Codex writes files and runs commands.
 
@@ -116,8 +116,8 @@ cp SKILL.md ~/.claude/plugins/marketplaces/claude-plugins-official/plugins/codex
 Or clone this repo and run:
 
 ```bash
-git clone https://github.com/cesarlandin/claudesquare
-cp claudesquare/SKILL.md ~/.claude/plugins/marketplaces/claude-plugins-official/plugins/codex-delegate/skills/codex-delegate/SKILL.md
+git clone https://github.com/cesarlandin/claude-handoff
+cp claude-handoff/SKILL.md ~/.claude/plugins/marketplaces/claude-plugins-official/plugins/codex-delegate/skills/codex-delegate/SKILL.md
 ```
 
 ### 4. Restart Claude Code
