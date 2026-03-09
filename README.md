@@ -86,43 +86,24 @@ Claude reads your `~/.claude/settings.json` and passes your permission model int
   codex login
   ```
 
-### 1. Create the plugin directory structure
+### 1. Copy the skill file
 
 ```bash
-mkdir -p ~/.claude/plugins/marketplaces/claude-plugins-official/plugins/codex-delegate/.claude-plugin
-mkdir -p ~/.claude/plugins/marketplaces/claude-plugins-official/plugins/codex-delegate/skills/codex-delegate
-```
-
-### 2. Create the plugin manifest
-
-Create `~/.claude/plugins/marketplaces/claude-plugins-official/plugins/codex-delegate/.claude-plugin/plugin.json`:
-
-```json
-{
-  "name": "codex-delegate",
-  "description": "Delegate code execution to OpenAI Codex CLI while Claude plans and reviews",
-  "author": {
-    "name": "Your Name"
-  }
-}
-```
-
-### 3. Copy the skill file
-
-```bash
-cp SKILL.md ~/.claude/plugins/marketplaces/claude-plugins-official/plugins/codex-delegate/skills/codex-delegate/SKILL.md
+mkdir -p ~/.claude/skills/codex-delegate
+cp SKILL.md ~/.claude/skills/codex-delegate/SKILL.md
 ```
 
 Or clone this repo and run:
 
 ```bash
 git clone https://github.com/cesarlandin/claude-handoff
-cp claude-handoff/SKILL.md ~/.claude/plugins/marketplaces/claude-plugins-official/plugins/codex-delegate/skills/codex-delegate/SKILL.md
+mkdir -p ~/.claude/skills/codex-delegate
+cp claude-handoff/SKILL.md ~/.claude/skills/codex-delegate/SKILL.md
 ```
 
-### 4. Restart Claude Code
+### 2. Restart Claude Code
 
-The plugin is picked up on startup. After restarting, the skill will auto-trigger at every implementation decision point.
+The skill is picked up on startup. Run `/skills` to confirm it appears. It will auto-trigger at every implementation decision point.
 
 ---
 
@@ -178,7 +159,6 @@ which codex
 |---|---|
 | `SKILL.md` | The skill definition loaded by Claude Code |
 | `settings.json` | Example Claude Code permissions file |
-| `.claude-plugin/plugin.json` | Plugin manifest (created during install) |
 
 ---
 
