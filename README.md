@@ -1,4 +1,4 @@
-# claude-handoff — Claude Code Skill
+# codex-delegate — Claude Code Skill
 
 A Claude Code skill plugin that offers to delegate implementation work to the [OpenAI Codex CLI](https://github.com/openai/codex) at every implementation decision point. Claude plans and reviews; Codex writes files and runs commands.
 
