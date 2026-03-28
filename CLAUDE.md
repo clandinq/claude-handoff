@@ -1,67 +1,48 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working in this repository.
 
 ## Project overview
 
-`claude-handoff` is a Claude Code skill plugin that delegates implementation work to the OpenAI Codex CLI. Claude handles planning and review; Codex executes file writes and shell commands. The skill auto-triggers at every implementation decision point to conserve Claude tokens.
+This is a documentation-first development repo for delegation skills. The root `SKILL.md` covers the Claude Code to OpenAI Codex handoff, and `gemini-delegate/SKILL.md` covers a Codex to Gemini CLI handoff for small, testable tasks. Most changes land in skill markdown files plus supporting docs; there is no build system or automated test suite.
 
 ## Repository structure
 
 ```
-claude-handoff/
-├── SKILL.md          # The skill definition installed into Claude Code's plugin system
-├── settings.json     # Example ~/.claude/settings.json with allow/deny command lists
-└── README.md         # Installation guide and architecture docs
+delegator/
+├── SKILL.md                  # Claude Code skill for delegating to Codex
+├── gemini-delegate/
+│   └── SKILL.md             # Codex skill for delegating simple tasks to Gemini
+├── README.md                # User-facing docs for the Claude skill
+├── settings.json            # Example ~/.claude/settings.json permissions
+├── AGENTS.md                # Contributor guide for human and AI collaborators
+└── CLAUDE.md                # Claude-specific repo instructions
 ```
 
-No build system, test runner, or package manager. This is documentation and configuration only.
+## Core workflow
 
-## Installation
+The root `SKILL.md` defines the six-step Claude to Codex path:
+
+1. Ask once whether to delegate to Codex
+2. Read Claude permissions and assemble approved commands
+3. Read a small set of relevant files only
+4. Build a self-contained Codex prompt with a SECURITY directive
+5. Run `codex exec` with `--sandbox workspace-write --full-auto`
+6. Review the diff and check for deny-list violations
+
+Keep shared safety language synchronized across `SKILL.md`, `gemini-delegate/SKILL.md`, `README.md`, `AGENTS.md`, and this file.
+
+## Validation
+
+Reinstall the skill after edits:
 
 ```bash
 mkdir -p ~/.claude/skills/codex-delegate
 cp SKILL.md ~/.claude/skills/codex-delegate/SKILL.md
 ```
 
-Restart Claude Code, then run `/skills` to confirm it appears. Skills must be in a named subdirectory — `~/.claude/skills/<skill-name>/SKILL.md` — not a flat file.
-
-## Codex binary path
-
-`SKILL.md` Step 5 hardcodes a Codex binary path:
-
-```
-/Users/cesarlandin/.nvm/versions/node/v24.13.0/bin/codex
-```
-
-Before installing, replace this with the output of `which codex` on the target machine.
-
-## Skill architecture
-
-The skill defines a 6-step workflow in `SKILL.md`:
-
-1. **Ask** — One confirmation before any file writes
-2. **Assemble permissions** — Read `~/.claude/settings.json`; extract `allow` (auto-approved for Codex) and `deny` (HARD CONSTRAINTS); surface any unlisted commands once for session approval
-3. **Plan** — Glob/Grep to find 3–5 relevant files; read only, no writes
-4. **Craft prompt** — Build a structured self-contained prompt with SECURITY directive, PROJECT/LANGUAGE/CONVENTIONS, relevant file paths, STEPS, APPROVED COMMANDS, and HARD CONSTRAINTS
-5. **Execute** — `codex exec "<prompt>" --sandbox workspace-write --ask-for-approval on-request --cd <project> --output-last-message /tmp/codex-last-msg.md`
-6. **Review** — `git diff`, read 1–2 modified files, read `/tmp/codex-last-msg.md`, grep for deny-list violations, report
-
-## Security model
-
-- `--sandbox workspace-write` bounds Codex file access to the project directory
-- Deny list enforced twice: in the prompt's HARD CONSTRAINTS and in Claude's post-execution grep
-- Codex prompt opens with a SECURITY directive to prevent prompt injection from file contents
-- `--ask-for-approval on-request` is a fallback safety layer for commands not in the approved list
-
-**Never use `--sandbox danger-full-access` unless explicitly requested.**
+Restart Claude Code, run `/skills`, then exercise the delegation prompt. If Step 5 changes, confirm the docs consistently mention `--full-auto` and `workspace-write`, and never recommend `danger-full-access` unless explicitly required.
 
 ## Editing guidance
 
-Changes to `SKILL.md` are the primary development activity. When modifying the workflow steps, verify:
-- Step 2 correctly surfaces only commands absent from both `allow` and `deny` lists
-- Step 4 prompt template includes the SECURITY directive at the top
-- Step 5 uses the correct sandbox flags
-- Step 6 greps for deny-list violations in addition to reviewing `git diff`
-
-`settings.json` is an example file users copy to `~/.claude/settings.json`. The deny list there should reflect the minimum safe baseline that will travel into every Codex prompt as HARD CONSTRAINTS.
+Prefer narrow documentation edits over broad rewrites. Preserve exact flag names, command examples, and security language. The Codex binary path in `SKILL.md` is machine-specific; document it clearly but do not generalize it as a portable default. Commit messages should follow the existing pattern: short, imperative, and sentence case.
